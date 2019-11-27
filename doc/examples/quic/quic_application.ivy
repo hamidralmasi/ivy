@@ -108,7 +108,10 @@ around app_server_open_event {
 
 action map_cids(dcid:cid,scid:cid) = {
     connected(dcid) := true;
-    connected_to(dcid) := scid
+    connected_to(dcid) := scid;
+    seqnum_to_cid(dcid, 0) := dcid;
+    cid_mapped(dcid) := true;
+    cid_to_aid(dcid) := dcid;
 }
 
 

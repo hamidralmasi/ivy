@@ -156,13 +156,15 @@ action packet_event(src:ip.endpoint,dst:ip.endpoint,pkt:quic_packet) = {}
 # - The relation `pkt_has_close(C,L,N)` is true if packet number `N` sent 
 #   by aid `C` contained a CONNECTION_CLOSE frame.
 #
-# - The relation cid_mapped(C) is true when connection ID C has been provided as new connection ID for a connection
+# - The relation `cid_mapped(C)` is true when connection ID C has been provided as new connection ID for a connection
 #   and becomes false when the C is retired
 #
-# - If cid_mapped(C) is true, then the function cid_to_aid(C) gives the aid for which C is a new connection ID
+# - If cid_mapped(C) is true, then the function `cid_to_aid(C)` gives the aid for which C is a new connection ID
 #
+# - If aid D created a new connection ID with sequence number S, then `seqnum_to_cid(D, S)` yield the new connection id.
+#
+# - The function `unretired_cid_count(C)` keeps track of the number of alive connection ids for aid C
 
-# - If aid D created a new connection ID with sequence number S, then seqnum_to_cid(D, S) yield the new connection id.
 relation conn_seen(C:cid)
 relation conn_closed(C:cid)
 relation conn_draining(C:cid)
@@ -180,6 +182,7 @@ relation cid_mapped(C : cid)
 function seqnum_to_cid (D : cid,S : cid_seq) : cid
 #Hamid
 function max_seq_num(C:cid) : cid_seq
+function unretired_cid_count(C:cid) : cid_seq
 #Hamid
 function connected_to(C:cid) : cid
 function nonce_cid(C:cid) : cid
@@ -216,6 +219,7 @@ after init {
     cid_mapped(C) := false;
     #Hamid
     max_seq_num(C) := 0;
+    unretired_cid_count(C) := 1;
     #Hamid
 }
 
@@ -351,6 +355,9 @@ around packet_event(src:ip.endpoint,dst:ip.endpoint,pkt:quic_packet) {
 #Hamid - This is wrong, because if there is no ack credits, it prevents from sending a packet 
 #        containing only a CONNECTION_CLOSE frame but we want to stop packets that contain only ACKs 
 #    require ~_generating & ~queued_ack_eliciting(scid) -> ack_credit(scid) > 0;
+    
+    require ~queued_retired(dcid);
+
 #Hamid
 
     # QUESTION: THis sentence is from draft-18 section 13.1: "An

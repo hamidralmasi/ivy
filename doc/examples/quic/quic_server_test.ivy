@@ -442,7 +442,7 @@ export frame.path_response.handle
 export packet_event
 export client_send_event
 export tls_recv_event
-#export frame.new_connection_id.handle
+export frame.new_connection_id.handle
 export frame.retire_connection_id.handle
 #export frame.rst_stream.handle
 #export frame.max_stream_id.handle
@@ -469,7 +469,7 @@ attribute radix=16
 # Notably, the `intbv` type can be used to represent large numbers with
 # small bit vector enodings.
 
-interpret cid -> intbv[1][13][2]
+interpret cid -> intbv[1][13][5]
 interpret version -> bv[32]
 interpret pkt_num -> bv[32]
 interpret error_code -> bv[16]
