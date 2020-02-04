@@ -453,7 +453,8 @@ object frame = {
         action handle(f:frame.ack,scid:cid,dcid:cid,e:quic_packet_type)
 
 	around handle {
-            require connected(dcid) & connected_to(dcid) = scid;
+            require connected(dcid);
+            require connected_to(dcid) = scid;
             require e = quic_packet_type.handshake -> established_handshake_keys(scid);  # [4]
             require e = quic_packet_type.one_rtt -> established_1rtt_keys(scid);  # [4]
             require num_queued_frames(scid) > 0 -> e = queued_level(scid);
