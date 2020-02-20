@@ -49,7 +49,7 @@ action tls_send_event(src:ip.endpoint,dst:ip.endpoint,scid:cid,dcid:cid,data:str
 
 implement pc.handle(src:ip.endpoint,dst:ip.endpoint,pkt:quic_packet) {
     call show_packet(src,dst,pkt);        # print the packet
-    call infer_tls_events(src,dst,pkt);   # infer any TLS events
+    call infer_events_from_packet(src,dst,pkt);   # infer any TLS events
     call packet_event(src,dst,pkt);       # monitor the protocol
 }
 

@@ -16,13 +16,16 @@
 # is commented and should be removed [1].
 #
 
-action infer_tls_events(src:ip.endpoint,dst:ip.endpoint,pkt:quic_packet) = {
+action infer_events_from_packet(src:ip.endpoint,dst:ip.endpoint,pkt:quic_packet) = {
 
     # Stream frames on id 0 indicate that a `tls_send_event` has occurred.
     # TODO: ignore duplicate frames.
 
     var scid := pkt.src_cid;
     var dcid := pkt.dst_cid;
+    if cid_mapped(dcid) {
+	    dcid := cid_to_aid(dcid);
+    };
 
     # On short headers, the scid is not given, so we use the recorded value
 

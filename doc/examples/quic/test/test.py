@@ -213,8 +213,14 @@ class Test(object):
         print command
         if platform.system() != 'Windows':
             oldcwd = os.getcwd()
+#            print "old_cwd:"
+#            print oldcwd
             os.chdir(self.dir)
+#            print "selfdir:"
+#            print self.dir
             proc = subprocess.Popen(command,stdout=iev,shell=True)
+#            print "changing to oldcwd:"
+#            print oldcwd
             os.chdir(oldcwd)
             try:
                 retcode = proc.wait()

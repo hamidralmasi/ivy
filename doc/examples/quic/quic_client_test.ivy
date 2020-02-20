@@ -348,7 +348,7 @@ implement net.recv(host:endpoint_id, s:net.socket, src:ip.endpoint, pkts:prot.ar
                 var pkt := pkt_serdes.from_bytes(res.data);
                 pkt.seq_num := prot.correct_packet_number(rnum,pkt.seq_num,get_pnum_len(res,0));
 	        call show_packet(src,dst,pkt);
-	        call infer_tls_events(src,dst,pkt);   # infer any TLS events on client side
+	        call infer_events_from_packet(src,dst,pkt);   # infer any TLS events on client side
 	        call packet_event(src,dst,pkt);
                 if bvand(ppkt.value(0),0xf0) = 0xc0 & ~cid_dst_to_src_set(the_cid) {
                     call app_server_open_event(dst,src,the_cid,pkt.hdr_cid);  # [1]
