@@ -384,11 +384,11 @@ around packet_event(src:ip.endpoint,dst:ip.endpoint,pkt:quic_packet) {
     # the "before" section cannot be accessed in the "after" section.
 
     var dcid := pkt.dst_cid;
-    var scid := pkt.src_cid if pkt.long else connected_to(dcid);
 
     if cid_mapped(dcid) {
 	    dcid := cid_to_aid(dcid);
     };
+    var scid := pkt.src_cid if pkt.long else connected_to(dcid);
 
     # Record the packet number as latest seen
 
