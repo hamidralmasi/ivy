@@ -1080,6 +1080,8 @@ object frame = { ...
             # This is implied by the standard which says that a frame cannot retire the connection id of the packet that contains it.
             var rcid := seqnum_to_cid(dcid, f.seq_num);
             # require exists C.cid_mapped(C) & cid_to_aid(C) = dcid & ~queued_retired(C) & C ~= seqnum_to_cid(dcid, f.seq_num); 
+            is_retired(rcid) := true;
+            unretired_count(rcid) := unretired_cid_count(rcid);
             require unretired_cid_count(rcid) > 1;
             #Hamid
 	        ...

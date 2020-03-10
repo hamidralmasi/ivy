@@ -183,6 +183,8 @@ function seqnum_to_cid (D : cid,S : cid_seq) : cid
 #Hamid
 function max_seq_num(C:cid) : cid_seq
 function unretired_cid_count(C:cid) : cid_seq
+relation is_retired(C:cid)
+function unretired_count(C:cid) : cid_seq
 #Hamid
 function connected_to(C:cid) : cid
 function nonce_cid(C:cid) : cid
@@ -220,6 +222,8 @@ after init {
     #Hamid
     max_seq_num(C) := 0;
     unretired_cid_count(C) := 1;
+    unretired_count(C) := 1;
+    is_retired(C) := false;
     #Hamid
 }
 
