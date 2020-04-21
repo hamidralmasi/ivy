@@ -438,6 +438,9 @@ object quic_deser = {}
                     state = quic_retire_connection_id_seq_num;
                     return 18;
                 }
+                if (frame_type == 0x1e) {  // handshake_done frame
+                    return 19;
+                }
                 std::cerr << "saw tag " << ft << std::endl;  
             }
             throw deser_err();

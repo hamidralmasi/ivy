@@ -17,7 +17,7 @@ include ip
 # This section defines the QUIC packet datatype. Packets are the basic
 # unit of communication between endpoints. A packet may be encoded in
 # either the long or the short format. There are packet types:
-# `initial`, `handshake`, `zero_rtt` and `one_rtt`. The `zero_rtt`
+# `initial`, `handshake`, `zero_rtt`, `one_rtt` and `retry`. The `zero_rtt`
 # type is encoded in the short format, while others are encoded in the
 # long format.  Packets have associated source cid (long format only)
 # and destination cid, protocol version (long format only), and a

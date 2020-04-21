@@ -259,6 +259,15 @@ object frame = {
         
     }
 
+    object handshake_done = {
+
+        # Handshake_done frames contain no data
+
+        variant this of frame = struct {
+        }
+    }
+
+
     instance idx : unbounded_sequence
     instance arr : array(idx,this)
 }        
@@ -612,7 +621,7 @@ object frame = {
 	around handle {
             require num_queued_frames(scid) > 0 -> e = queued_level(scid);
 #            require ~conn_closed(scid);  # [1]
-
+        require ((f.offset) + (f.length)) <= 4611686018427387903;
 	    require ((f.offset) + (f.length)) <= crypto_data_end(scid,e);  # [2]
 	    require f.data = crypto_data(scid,e).segment(f.offset,f.offset+f.length);  # [2]
 
@@ -1100,6 +1109,27 @@ object frame = { ...
 
 
 #
+# #### HANDSHAKE_DONE event
+#
+# The server uses the HANDSHAKE_DONE frame (type=0x1e) to signal confirmation of the handshake to the client.
+# Servers MUST NOT send a HANDSHAKE_DONE frame before completing the handshake.
+object frame = { ...
+    object handshake_done = { ...
+        action handle(f:frame.handshake_done,scid:cid,dcid:cid,e:quic_packet_type)
+	around handle {
+            require connected(dcid) & connected_to(dcid) = scid;
+            # QUESTION: The spec does not specify if HANDSHAKE_DONE frames can also be transmitted in 1rtt packets?
+            require e = quic_packet_type.handshake -> established_handshake_keys(scid);
+            require e = quic_packet_type.one_rtt -> established_1rtt_keys(scid);
+            require num_queued_frames(scid) > 0 -> e = queued_level(scid);
+            ...
+            call enqueue_frame(scid,f,e,false);
+        }
+    }
+}
+
+
+#
 # #### PATH_CHALLENGE event
 #
 # Path challenge frames are used to request verification of ownership
@@ -1166,6 +1196,7 @@ object frame = { ...
             require connected(dcid) & connected_to(dcid) = scid;
             require e = quic_packet_type.one_rtt & established_1rtt_keys(scid);
             require num_queued_frames(scid) > 0 -> e = queued_level(scid);
+            require f.data.end > 0;
             require ~is_client(scid);
             ...
             call enqueue_frame(scid,f,e,false);
